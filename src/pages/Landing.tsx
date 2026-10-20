@@ -1,6 +1,8 @@
 // Landing de CONNECT TEAM EXPERIENCE, segons el catàleg final.
 // Sense calendari: el formulari «Parlem?» envia les dades a hola@impausa.com (Netlify Forms).
+import { useEffect } from 'react';
 import { useT } from '../i18n';
+import { LEGAL_URL, tornarAlScroll } from '../lib/legal';
 import { ContactForm } from '../components/ContactForm';
 import { ConnectWordmark, DiscCircles, DiscDots, Icon, Logo } from '../components/Brand';
 import { LOCAL_MODE } from '../lib/api';
@@ -10,6 +12,7 @@ const DISC_BORDER = ['border-disc-d', 'border-disc-i', 'border-disc-s', 'border-
 
 export function Landing() {
   const t = useT();
+  useEffect(() => tornarAlScroll(), []);
   return (
     <>
       <a href="#contingut" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
@@ -367,7 +370,7 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Legal">
-          <a className="hover:text-white" href="https://www.impausa.com/entorn_legal_impausa.html">{t.footer.legal}</a>
+          <a className="hover:text-white" href={LEGAL_URL} target="_self">{t.footer.legal}</a>
           <a className="hover:text-white" href="https://www.impausa.com">impausa.com</a>
         </nav>
       </div>

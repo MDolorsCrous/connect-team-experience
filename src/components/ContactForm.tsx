@@ -5,6 +5,7 @@ import { useT } from '../i18n';
 import { ApiError, submitLead } from '../lib/api';
 import { LEAD_LIMITS, validateLead, type LeadInput } from '../../shared/lead.ts';
 import { Icon } from './Brand';
+import { LEGAL_URL, formulariRecuperat } from '../lib/legal';
 
 type FormState = {
   company: string;
@@ -39,7 +40,8 @@ const EMPTY: FormState = {
 export function ContactForm() {
   const t = useT().contact;
   const uid = useId();
-  const [f, setF] = useState<FormState>(EMPTY);
+  // Si es torna de l'entorn legal, el formulari torna a tenir el que s'hi havia escrit
+  const [f, setF] = useState<FormState>(() => ({ ...EMPTY, ...(formulariRecuperat() ?? {}) }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -91,6 +93,7 @@ export function ContactForm() {
   const errorList = Object.entries(errors).filter(([, v]) => v);
   const fieldProps = (k: keyof FormState) => ({
     id: `${uid}-${k}`,
+    name: k,
     'aria-invalid': errors[k] ? (true as const) : undefined,
     'aria-describedby': errors[k] ? `${uid}-${k}-err` : undefined,
   });
@@ -113,7 +116,7 @@ export function ContactForm() {
   const [privA, privB] = t.privacy('§').split('§');
 
   return (
-    <form onSubmit={submit} noValidate className="rounded-3xl bg-white p-5 text-ink shadow-soft sm:p-8">
+    <form data-form="parlem" onSubmit={submit} noValidate className="rounded-3xl bg-white p-5 text-ink shadow-soft sm:p-8">
       <h3 className="mb-5 font-head text-xl font-bold text-pine-900">{t.formTitle}</h3>
 
       {errorList.length > 0 && (
@@ -191,13 +194,13 @@ export function ContactForm() {
           <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-pine-900" {...fieldProps('privacy')} checked={f.privacy} onChange={(e) => set('privacy', e.target.checked)} />
           <span>
             {privA}
-            <a href="/privacitat" target="_blank" rel="noopener" className="font-semibold text-pine-800 underline">{t.privacyLink}</a>
+            <a href={LEGAL_URL} target="_self" className="font-semibold text-pine-800 underline">{t.privacyLink}</a>
             {privB} *
           </span>
         </label>
         <Err k="privacy" />
         <label className="flex items-start gap-3">
-          <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-pine-900" checked={f.marketing} onChange={(e) => set('marketing', e.target.checked)} />
+          <input type="checkbox" name="marketing" className="mt-0.5 h-5 w-5 shrink-0 accent-pine-900" checked={f.marketing} onChange={(e) => set('marketing', e.target.checked)} />
           <span>{t.marketing}</span>
         </label>
         <details className="text-xs leading-relaxed text-ink-muted">

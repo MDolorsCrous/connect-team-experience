@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "test": "node --test --experimental-strip-types tests/lead.test.ts",
+    "test": "node --test --experimental-strip-types tests/lead.test.ts tests/legal.test.ts",
     "pdf": "node tests/pdf.mjs http://localhost:5173/ CONNECT_Team_Experience_IMPAUSA.pdf"
   },
   "dependencies": {
