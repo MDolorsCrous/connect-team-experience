@@ -1,41 +1,21 @@
-# Motor de reserves d'experiències IMPAUSA
+# CONNECT Team Experience · web comercial d'IMPAUSA
 
-Primera experiència: **CONNECT Christmas Experience** (Nadal 2026). Web comercial pública
-amb calendari de dues franges, prereserva gratuïta, correus automàtics i panell privat.
-
-| Peça | Tecnologia |
-|---|---|
-| Web pública i panell | React 18 + TypeScript + Tailwind (Vite) |
-| Base de dades i accés de l'equip | Supabase (Postgres + Auth + RLS) |
-| Servidor (validació, correus, tasca diària) | Netlify Functions |
-| Correu transaccional | Resend (canviable a `netlify/lib/mailer.ts`) |
-
-## Com funciona
-
-```
-Visitant ──► public_availability()  (RPC: només dia, franja i estat; cap empresa)
-         └─► POST /api/prereserva ──► valida ──► create_prebooking()  (bloqueja la fila,
-                (Netlify Function)                  índex únic: 1 sol·licitud activa per franja)
-                                     └─► correu al client + notificació interna
-
-Equip ──► /admin (Supabase Auth) ──► RLS + RPC admin_* (comproven rol, deixen rastre a audit_log)
-```
-
-- **Disponibilitat** (`slots.status`: disponible · pendent · confirmada · bloquejada) i
-  **estat comercial** (`bookings.commercial_status`: nova · contacte pendent · en negociació ·
-  confirmada · cancel·lada · no convertida) són camps separats.
-- Una prereserva deixa la franja **pendent** i en bloqueja d'altres fins que l'equip la
-  confirma o l'allibera. Al públic es mostra «Pendent de disponibilitat».
-- Reutilitzable: una experiència nova és una fila a `experiences` + les seves `slot_types`.
-
-## Desenvolupament
+Landing estàtica (React + TypeScript + Tailwind, Vite) basada en el catàleg final de
+CONNECT TEAM EXPERIENCE. No hi ha reserves en línia ni base de dades: el formulari
+«Parlem?» l'envia **Netlify Forms**, que el reenvia per correu a **hola@impausa.com** i en
+guarda el llistat. L'equip d'administració gestiona les sol·licituds i fa les reserves.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173 — sense .env funciona en mode demostració
-npm test             # proves unitàries (validació, correus, dates)
+npm run dev     # http://localhost:5173 — en local el formulari es valida però no envia res
+npm test        # validació del formulari i plantilla de Netlify Forms
 npm run build
+npm run pdf     # PDF navegable (amb npm run dev en marxa)
 node tests/e2e-public.mjs http://localhost:5173/   # recorregut complet amb Chrome headless
+node tests/responsive.mjs http://localhost:5173/   # 7 amplades, de 320 a 1920 px
 ```
 
-Posada en marxa, variables d'entorn i operativa: **[docs/OPERACIONS.md](docs/OPERACIONS.md)**.
+Publicació i configuració del correu: **[docs/OPERACIONS.md](docs/OPERACIONS.md)**.
+
+La versió anterior amb calendari, prereserves, panell i Supabase és a l'etiqueta git
+`motor-reserves-supabase`.

@@ -1,9 +1,9 @@
 // Landing de CONNECT TEAM EXPERIENCE, segons el catàleg final.
-// Sense calendari ni reserva: el formulari «Parlem?» envia les dades a hola@impausa.com.
+// Sense calendari: el formulari «Parlem?» envia les dades a hola@impausa.com (Netlify Forms).
 import { useT } from '../i18n';
 import { ContactForm } from '../components/ContactForm';
 import { ConnectWordmark, DiscCircles, DiscDots, Icon, Logo } from '../components/Brand';
-import { DEMO_MODE } from '../lib/supabase';
+import { LOCAL_MODE } from '../lib/api';
 
 const DISC_TEXT = ['text-disc-d', 'text-disc-i', 'text-disc-s', 'text-disc-c'];
 const DISC_BORDER = ['border-disc-d', 'border-disc-i', 'border-disc-s', 'border-disc-c'];
@@ -15,7 +15,7 @@ export function Landing() {
       <a href="#contingut" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
         {t.nav.skip}
       </a>
-      {DEMO_MODE && <div className="bg-gold px-4 py-2 text-center text-sm font-semibold text-pine-950 print:hidden">{t.demo}</div>}
+      {LOCAL_MODE && <div className="bg-gold px-4 py-2 text-center text-sm font-semibold text-pine-950 print:hidden">{t.demo}</div>}
       <Header />
       <main id="contingut">
         <Hero />
@@ -74,7 +74,7 @@ function Header() {
           <a className="hover:text-white" href="#solucio">{t.nav.experience}</a>
           <a className="hover:text-white" href="#parlem">{t.nav.contact}</a>
         </nav>
-        <a href="#parlem" className="btn-primary whitespace-nowrap px-4 py-2 text-xs">{t.nav.cta}</a>
+        <a href="#parlem" className="btn-primary min-h-[44px] whitespace-nowrap px-5 py-2 text-xs lg:min-h-0">{t.nav.cta}</a>
       </div>
     </header>
   );
@@ -339,8 +339,8 @@ function Contact() {
           </div>
           <p className="mt-6 text-sm text-pine-200">
             {t.contact.direct}{' '}
-            <a className="font-semibold text-white underline" href="mailto:hola@impausa.com">hola@impausa.com</a> ·{' '}
-            <a className="font-semibold text-white underline" href="tel:+34613026544">613 026 544</a>
+            <a className="whitespace-nowrap font-semibold text-white underline" href="mailto:hola@impausa.com">hola@impausa.com</a> ·{' '}
+            <a className="whitespace-nowrap font-semibold text-white underline" href="tel:+34613026544">613 026 544</a>
           </p>
         </div>
         <div className="print:hidden">
@@ -363,14 +363,12 @@ export function Footer() {
             <span className="hidden sm:inline"> · </span>
             <a className="hover:text-white" href="mailto:hola@impausa.com">hola@impausa.com</a>
             <span className="hidden sm:inline"> · </span>
-            <a className="hover:text-white" href="tel:+34613026544">613 026 544</a>
+            <a className="whitespace-nowrap hover:text-white" href="tel:+34613026544">613 026 544</a>
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Legal">
-          <a className="hover:text-white" href="/privacitat">{t.footer.privacy}</a>
           <a className="hover:text-white" href="https://www.impausa.com/entorn_legal_impausa.html">{t.footer.legal}</a>
           <a className="hover:text-white" href="https://www.impausa.com">impausa.com</a>
-          <a className="text-pine-300/60 hover:text-white print:hidden" href="/admin" rel="nofollow">{t.footer.admin}</a>
         </nav>
       </div>
       <p className="container-x mt-6 text-xs text-pine-300/60">© {new Date().getFullYear()} IMPAUSA POWER S.L. {t.footer.rights}</p>

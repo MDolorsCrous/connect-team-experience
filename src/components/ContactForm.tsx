@@ -1,14 +1,15 @@
 // Formulari «Parlem?»: l'empresa interessada deixa les seves dades i s'envien
-// automàticament a hola@impausa.com (via /api/contacte). Sense calendari ni reserva.
+// automàticament a hola@impausa.com (via Netlify Forms). Sense calendari ni reserva.
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
-import { useLocale, useT } from '../i18n';
-import { ApiError, createLead } from '../lib/api';
+import { useT } from '../i18n';
+import { ApiError, submitLead } from '../lib/api';
 import { LEAD_LIMITS, validateLead, type LeadInput } from '../../shared/lead.ts';
 import { Icon } from './Brand';
 
 type FormState = {
   company: string;
   contactName: string;
+  jobTitle: string;
   email: string;
   phone: string;
   location: string;
@@ -23,6 +24,7 @@ type FormState = {
 const EMPTY: FormState = {
   company: '',
   contactName: '',
+  jobTitle: '',
   email: '',
   phone: '',
   location: '',
@@ -36,13 +38,12 @@ const EMPTY: FormState = {
 
 export function ContactForm() {
   const t = useT().contact;
-  const locale = useLocale();
   const uid = useId();
   const [f, setF] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [done, setDone] = useState<{ ref: string; form: FormState } | null>(null);
+  const [done, setDone] = useState<FormState | null>(null);
   const startedAt = useRef(Date.now());
   const summaryRef = useRef<HTMLDivElement>(null);
 
@@ -54,20 +55,21 @@ export function ContactForm() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setServerError(null);
-    const input: LeadInput = { ...f, locale, startedAt: startedAt.current };
+    const input: LeadInput = { ...f, startedAt: startedAt.current };
     const v = validateLead(input);
     if (!v.ok && Object.keys(v.errors).length > 0) {
       setErrors(v.errors as Record<string, string>);
       requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
+    // Robot (camp ocult omplert o massa ràpid): li diem que s'ha enviat, però no s'envia res
+    if (!v.ok) return setDone(f);
     setSending(true);
     try {
-      const res = await createLead(input);
-      setDone({ ref: res.ref, form: f });
+      await submitLead(v.data, f.website);
+      setDone(f);
     } catch (err) {
       const code = err instanceof ApiError ? err.code : 'SERVER_ERROR';
-      if (err instanceof ApiError && Object.keys(err.fields).length) setErrors(err.fields);
       setServerError(t.serverErrors[code] ?? t.serverErrors.SERVER_ERROR);
     } finally {
       setSending(false);
@@ -77,8 +79,7 @@ export function ContactForm() {
   if (done)
     return (
       <Done
-        ref_={done.ref}
-        form={done.form}
+        form={done}
         onAnother={() => {
           setDone(null);
           setF(EMPTY);
@@ -100,6 +101,7 @@ export function ContactForm() {
   const labels: Record<string, string> = {
     company: t.company,
     contactName: t.contactName,
+    jobTitle: t.jobTitle,
     email: t.email,
     phone: t.phone,
     location: t.location,
@@ -137,6 +139,11 @@ export function ContactForm() {
           <Err k="contactName" />
         </div>
         <div>
+          <label className="label" htmlFor={`${uid}-jobTitle`}>{t.jobTitle} *</label>
+          <input className="field" {...fieldProps('jobTitle')} autoComplete="organization-title" maxLength={LEAD_LIMITS.jobTitle} placeholder={t.jobTitleHint} value={f.jobTitle} onChange={(e) => set('jobTitle', e.target.value)} />
+          <Err k="jobTitle" />
+        </div>
+        <div>
           <label className="label" htmlFor={`${uid}-email`}>{t.email} *</label>
           <input className="field" {...fieldProps('email')} type="email" inputMode="email" autoComplete="email" maxLength={LEAD_LIMITS.email} value={f.email} onChange={(e) => set('email', e.target.value)} />
           <Err k="email" />
@@ -158,7 +165,7 @@ export function ContactForm() {
           <p className="mt-1.5 text-xs text-ink-muted">{t.participantsHint}</p>
           <Err k="participants" />
         </div>
-        <div className="md:col-span-2">
+        <div>
           <label className="label" htmlFor={`${uid}-preferredDates`}>
             {t.preferredDates} <span className="font-normal text-ink-muted">({t.optional})</span>
           </label>
@@ -211,7 +218,7 @@ export function ContactForm() {
   );
 }
 
-function Done({ ref_, form, onAnother }: { ref_: string; form: FormState; onAnother: () => void }) {
+function Done({ form, onAnother }: { form: FormState; onAnother: () => void }) {
   const t = useT().contact;
   const h = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -220,9 +227,9 @@ function Done({ ref_, form, onAnother }: { ref_: string; form: FormState; onAnot
   }, []);
   const L = t.done.labels;
   const rows: [string, string][] = [
-    [L.ref, ref_],
     [L.company, form.company.trim()],
     [L.contact, form.contactName.trim()],
+    [L.jobTitle, form.jobTitle.trim()],
     [L.email, form.email.trim()],
     [L.phone, form.phone.trim()],
     [L.location, form.location.trim()],

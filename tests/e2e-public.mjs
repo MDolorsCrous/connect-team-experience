@@ -20,6 +20,7 @@ for (const vp of [{ name: 'mobil', width: 390, height: 844, mobile: true }, { na
     check(await p.eval(`document.documentElement.scrollWidth <= window.innerWidth`), 'sense scroll horitzontal');
     check((await p.eval(`document.querySelector('h1').textContent`)).includes('Descobriu tot el que us connecta'), 'títol del catàleg final');
     const text = await p.eval(`document.body.innerText`);
+    check(text.includes('Shikkhona') && text.includes('metodologia DISC de William M. Marston'), 'Shikkhona i metodologia DISC de William M. Marston');
     check(!/reserv|calendari/i.test(text.replace(/drets reservats/gi, '')), 'cap referència a reservar ni al calendari');
     check(!/jugar|juguem|celebr|taula|àpat|dinar|sopar|nadal|christmas/i.test(text), 'sense jugar, celebrar, taula, àpat, dinar, sopar ni Nadal');
     check(text.includes('CONNECT') && text.includes('TEAM EXPERIENCE'), 'marca CONNECT TEAM EXPERIENCE');
@@ -33,7 +34,7 @@ for (const vp of [{ name: 'mobil', width: 390, height: 844, mobile: true }, { na
     await p.eval(`${form}.querySelector('button[type=submit]').click()`);
     await p.waitFor(`${form}.querySelector('[role=alert]')`);
     const errs = await p.eval(`${form}.querySelectorAll('[aria-invalid=true]').length`);
-    check(errs >= 7, `validació de camps obligatoris (${errs} camps marcats)`);
+    check(errs >= 8, `validació de camps obligatoris (${errs} camps marcats)`);
 
     await p.sleep(2600); // supera el temps mínim antirobot
     await p.eval(`(() => {
@@ -46,6 +47,7 @@ for (const vp of [{ name: 'mobil', width: 390, height: 844, mobile: true }, { na
       const byLabel = (t) => f.querySelector('#' + CSS.escape([...f.querySelectorAll('label')].find(l => l.textContent.startsWith(t)).htmlFor));
       set(byLabel('Nom de l’empresa'), 'Prova QA <script>&"');
       set(byLabel('Nom i cognoms'), 'Persona de Prova');
+      set(byLabel('Càrrec'), 'Directora de persones');
       set(byLabel('Correu professional'), 'qa@example.com');
       set(byLabel('Telèfon'), '+34 600 000 000');
       set(byLabel('Municipi'), 'Sant Quirze de Besora');
@@ -59,7 +61,7 @@ for (const vp of [{ name: 'mobil', width: 390, height: 844, mobile: true }, { na
     await p.waitFor(`document.body.textContent.includes('Hem rebut la vostra sol·licitud')`, 15000);
     check(true, 'confirmació mostrada');
     const conf = await p.eval(`document.querySelector('section[aria-labelledby=parlem]').innerText`);
-    check(conf.includes('Prova QA <script>&"') && conf.includes('Març, matins'), 'resum amb les dades enviades, sense injecció');
+    check(conf.includes('Prova QA <script>&"') && conf.includes('Març, matins') && conf.includes('Directora de persones'), 'resum amb les dades enviades (amb càrrec), sense injecció');
     await p.shot(`${OUT}/${vp.name}-confirmacio.png`);
   } catch (e) {
     check(false, e.message);

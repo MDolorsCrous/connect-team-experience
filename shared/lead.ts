@@ -1,10 +1,10 @@
-// Sol·licitud d'informació ("Parlem?"): validació compartida (formulari + servidor) i correu intern.
-import { C, esc, layout, rows, type Email } from './emails.ts';
-import { formatTimestamp } from './format.ts';
+// Sol·licitud d'informació («Parlem?»): validació del formulari i conversió als camps
+// que rep Netlify Forms, que envia cada sol·licitud a hola@impausa.com.
 
 export type LeadInput = {
   company: string;
   contactName: string;
+  jobTitle: string;
   email: string;
   phone: string;
   location: string;
@@ -13,7 +13,6 @@ export type LeadInput = {
   notes?: string;
   privacy: boolean;
   marketing?: boolean;
-  locale?: string;
   website?: string; // honeypot: ha d'arribar buit
   startedAt?: number; // ms en què es va mostrar el formulari
 };
@@ -21,6 +20,7 @@ export type LeadInput = {
 export type LeadData = {
   company: string;
   contactName: string;
+  jobTitle: string;
   email: string;
   phone: string;
   location: string;
@@ -28,7 +28,6 @@ export type LeadData = {
   preferredDates: string | null;
   notes: string | null;
   marketing: boolean;
-  locale: 'ca' | 'es';
 };
 
 export type LeadFieldError = 'required' | 'too_long' | 'invalid_email' | 'invalid_phone' | 'invalid_number' | 'privacy_required';
@@ -40,6 +39,7 @@ export type LeadValidation =
 export const LEAD_LIMITS = {
   company: 160,
   contactName: 160,
+  jobTitle: 120,
   email: 254,
   phone: 40,
   location: 120,
@@ -59,7 +59,7 @@ export function validateLead(input: Partial<LeadInput>, now = Date.now()): LeadV
   const spam =
     clean(input.website) !== '' || (typeof input.startedAt === 'number' && now - input.startedAt < LEAD_LIMITS.minFillMs);
 
-  const text = (k: 'company' | 'contactName' | 'location', min = 2) => {
+  const text = (k: 'company' | 'contactName' | 'jobTitle' | 'location', min = 2) => {
     const v = clean(input[k]);
     if (v.length < min) errors[k] = 'required';
     else if (v.length > LEAD_LIMITS[k]) errors[k] = 'too_long';
@@ -67,6 +67,7 @@ export function validateLead(input: Partial<LeadInput>, now = Date.now()): LeadV
   };
   const company = text('company');
   const contactName = text('contactName', 3);
+  const jobTitle = text('jobTitle');
   const location = text('location');
 
   const email = clean(input.email).toLowerCase();
@@ -98,6 +99,7 @@ export function validateLead(input: Partial<LeadInput>, now = Date.now()): LeadV
     data: {
       company,
       contactName,
+      jobTitle,
       email,
       phone,
       location,
@@ -105,40 +107,41 @@ export function validateLead(input: Partial<LeadInput>, now = Date.now()): LeadV
       preferredDates: preferredDates || null,
       notes: notes || null,
       marketing: input.marketing === true,
-      locale: input.locale === 'es' ? 'es' : 'ca',
     },
   };
 }
 
-export type LeadSummary = LeadData & { ref: string; experienceName: string; createdAt: string };
+/** Nom del formulari a Netlify i noms dels camps tal com arriben al correu de hola@impausa.com. */
+export const NETLIFY_FORM = 'parlem';
+export const NETLIFY_FIELDS = [
+  'subject',
+  'empresa',
+  'persona_contacte',
+  'carrec',
+  'correu',
+  'telefon',
+  'municipi',
+  'participants',
+  'data_preferent',
+  'observacions',
+  'comunicacions_comercials',
+  'politica_privacitat',
+] as const;
 
-/** Correu que rep hola@impausa.com amb totes les dades del formulari. */
-export function internalLeadEmail(l: LeadSummary, adminUrl: string): Email {
-  const subject = `Nova sol·licitud d’informació — ${l.experienceName} · ${l.company} · ${l.ref}`;
-  const pairs: [string, string][] = [
-    ['Referència', l.ref],
-    ['Experiència', l.experienceName],
-    ['Empresa', l.company],
-    ['Persona de contacte', l.contactName],
-    ['Correu', l.email],
-    ['Telèfon', l.phone],
-    ['Municipi', l.location],
-    ['Participants (aprox.)', String(l.participants)],
-    ['Data o període preferent', l.preferredDates || '—'],
-    ['Observacions', l.notes || '—'],
-    ['Consentiment comercial', l.marketing ? 'Sí' : 'No'],
-    ['Rebuda', formatTimestamp(l.createdAt) + ' (hora de Madrid)'],
-  ];
-  const link = adminUrl ? `${adminUrl.replace(/\/$/, '')}/admin?lead=${encodeURIComponent(l.ref)}` : '';
-  const body = `
-<h1 style="font-family:Montserrat,Arial,sans-serif;font-size:20px;color:${C.pine};margin:0 0 8px">Nova sol·licitud d’informació</h1>
-<p style="font-size:15px;line-height:1.6;margin:0 0 20px"><strong>${esc(l.company)}</strong> vol informació sobre <strong>${esc(l.experienceName)}</strong>. Responeu aquest correu per escriure directament a ${esc(l.contactName)}.</p>
-${rows(pairs)}
-${link ? `<p style="margin:28px 0 0"><a href="${esc(link)}" style="display:inline-block;background:${C.ember};color:#ffffff;text-decoration:none;font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px">Obre-la al panell privat</a></p>` : ''}`;
-  const text = ['NOVA SOL·LICITUD D’INFORMACIÓ', '', ...pairs.map(([k, v]) => `${k}: ${v}`), '', link ? `Panell privat: ${link}` : ''].join('\n');
+export function toNetlifyFields(d: LeadData): Record<(typeof NETLIFY_FIELDS)[number], string> {
   return {
-    subject,
-    html: layout(subject, body, 'Notificació automàtica del formulari «Parlem?» del web. Conté dades personals: no la reenvieu fora de l’equip.'),
-    text,
+    // Netlify fa servir el camp «subject» com a assumpte del correu de notificació
+    subject: `Nova sol·licitud d’informació — CONNECT Team Experience · ${d.company}`,
+    empresa: d.company,
+    persona_contacte: d.contactName,
+    carrec: d.jobTitle,
+    correu: d.email,
+    telefon: d.phone,
+    municipi: d.location,
+    participants: String(d.participants),
+    data_preferent: d.preferredDates ?? '',
+    observacions: d.notes ?? '',
+    comunicacions_comercials: d.marketing ? 'Sí' : 'No',
+    politica_privacitat: 'Acceptada',
   };
 }

@@ -20,7 +20,7 @@ export function Privacy() {
         </div>
       </header>
       <main className="container-x max-w-3xl py-16">
-        <p className="kicker mb-3">Versió 2026-10-v1</p>
+        <p className="kicker mb-3">Versió 2026-10-v2</p>
         <h1 className="mb-8 text-3xl font-extrabold text-pine-900 sm:text-4xl">Política de privacitat — sol·licituds d’informació</h1>
         <div className="space-y-8 leading-relaxed text-ink [&_h2]:mb-2 [&_h2]:font-head [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-pine-900">
           <section>
@@ -33,9 +33,10 @@ export function Privacy() {
           <section>
             <h2>2. Quines dades tractem</h2>
             <p>
-              Nom de l’empresa, nom i cognoms de la persona de contacte, correu professional, telèfon, nombre aproximat
-              de participants, municipi, data o període preferent, observacions que ens vulgueu indicar i la data i hora
-              de la sol·licitud. Per prevenir abusos, desem un resum criptogràfic (hash) de l’adreça IP, mai l’adreça en clar.
+              Nom de l’empresa, nom i cognoms i càrrec de la persona de contacte, correu professional, telèfon, nombre
+              aproximat de participants, municipi, data o període preferent, observacions que ens vulgueu indicar i la data
+              i hora de la sol·licitud. El servei de formularis (Netlify) pot registrar l’adreça IP per filtrar enviaments
+              automàtics (correu brossa).
               No us demanem dades de categories especials: no les incloeu a les observacions.
             </p>
           </section>
@@ -50,17 +51,19 @@ export function Privacy() {
           <section>
             <h2>4. Conservació</h2>
             <p>
-              Les dades de contacte de les sol·licituds ja tancades
-              s’anonimitzen automàticament passats 24 mesos des de la sol·licitud, llevat que calgui conservar-les per
-              complir obligacions legals. <Pending>termini definitiu de conservació</Pending>
+              Conservem les dades el temps necessari per atendre la sol·licitud i, si es contracta l’experiència, durant
+              la relació comercial i els terminis legals aplicables. Les sol·licituds que no es concretin s’eliminen
+              passats 24 mesos. <Pending>termini definitiu de conservació</Pending>
             </p>
           </section>
           <section>
             <h2>5. Destinataris i encarregats</h2>
             <p>
               No cedim les dades a tercers excepte obligació legal. Hi accedeixen proveïdors tecnològics que actuen com a
-              encarregats del tractament: Supabase (base de dades, servidors a la Unió Europea), Netlify (allotjament web)
-              i el proveïdor de correu transaccional <Pending>proveïdor de correu i ubicació de les dades</Pending>.
+              encarregats del tractament: Netlify, Inc. (allotjament del web i recepció del formulari, que reenvia a
+              hola@impausa.com) i el proveïdor del correu electrònic d’IMPAUSA. Netlify pot tractar dades fora de l’Espai
+              Econòmic Europeu amb les garanties de les clàusules contractuals tipus de la Comissió Europea.
+              <Pending>proveïdor de correu d’IMPAUSA</Pending>
             </p>
           </section>
           <section>
@@ -75,8 +78,7 @@ export function Privacy() {
           <section>
             <h2>7. Galetes</h2>
             <p>
-              Aquest web no fa servir galetes de publicitat ni d’analítica, ni carrega tipografies o scripts de tercers.
-              El panell privat de l’equip d’IMPAUSA desa al navegador la sessió d’accés, imprescindible per funcionar.
+              Aquest web no fa servir galetes, ni de publicitat ni d’analítica, ni carrega tipografies o scripts de tercers.
             </p>
           </section>
           <p className="text-sm text-ink-muted">

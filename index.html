@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CONNECT Team Experience · Team building per a empreses | IMPAUSA</title>
-    <meta name="description" content="Descobriu tot el que us connecta. Team building presencial de tres hores per a empreses: autoconeixement conductual, dinàmiques participatives i reptes de comunicació. Disponible tot l’any." />
+    <meta name="description" content="Descobriu tot el que us connecta. Team building presencial de tres hores per a empreses: autoconeixement conductual, dinàmiques participatives i reptes de comunicació." />
     <meta name="theme-color" content="#14261F" />
     <link rel="canonical" href="https://connect.impausa.com/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -37,6 +37,23 @@
     </script>
   </head>
   <body>
+    <!-- Netlify Forms: plantilla del formulari «Parlem?» (oculta). Netlify la llegeix en publicar
+         el web i així accepta els enviaments del formulari React i els reenvia a hola@impausa.com. -->
+    <form name="parlem" data-netlify="true" netlify-honeypot="website" hidden>
+      <input name="website" />
+      <input name="subject" />
+      <input name="empresa" />
+      <input name="persona_contacte" />
+      <input name="carrec" />
+      <input name="correu" />
+      <input name="telefon" />
+      <input name="municipi" />
+      <input name="participants" />
+      <input name="data_preferent" />
+      <input name="observacions" />
+      <input name="comunicacions_comercials" />
+      <input name="politica_privacitat" />
+    </form>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
