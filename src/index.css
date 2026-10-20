@@ -1,0 +1,42 @@
+@font-face { font-family: 'Montserrat'; src: url('/fonts/montserrat-var.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/fonts/lato-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Lato'; src: url('/fonts/lato-700.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'EB Garamond'; src: url('/fonts/ebgaramond-italic.woff2') format('woff2'); font-style: italic; font-display: swap; }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+  body { @apply bg-cream font-body text-ink antialiased; }
+  h1, h2, h3, h4 { @apply font-head; text-wrap: balance; }
+  :focus-visible { outline: 3px solid #D4A44A; outline-offset: 2px; border-radius: 6px; }
+  [id] { scroll-margin-top: 5rem; }
+}
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8; }
+  .kicker { @apply font-head text-xs font-bold uppercase tracking-[0.25em] text-ember; }
+  .rule { @apply mb-6 h-[3px] w-20 rounded-full bg-gold; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-center font-head text-sm font-bold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-primary { @apply btn bg-ember text-white shadow-soft hover:bg-ember-dark; }
+  .btn-ghost { @apply btn border border-current bg-transparent hover:bg-white/10; }
+  .field { @apply block w-full rounded-xl border border-cream-300 bg-white px-4 py-3 text-base text-ink placeholder:text-ink-muted/60 focus:border-pine-600 focus:outline-none focus:ring-2 focus:ring-pine-600/30; }
+  .field[aria-invalid='true'] { @apply border-disc-d ring-2 ring-disc-d/20; }
+  .label { @apply mb-1.5 block font-head text-sm font-semibold text-pine-900; }
+}
+
+/* ---- Versió PDF (impressió) ---- */
+@media print {
+  @page { size: A4; margin: 0; }
+  html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html { scroll-behavior: auto; }
+  article, .shadow-soft, li, dl > div, .rounded-2xl, .rounded-3xl { break-inside: avoid; }
+  h1, h2, h3, .kicker, .rule { break-after: avoid; }
+  h1, h2, h3, p { break-inside: avoid; }
+  section { break-inside: auto; }
+  main > section, main > nav { break-before: auto; }
+  .shadow-soft { box-shadow: none; border: 1px solid #E6DED3; }
+}
