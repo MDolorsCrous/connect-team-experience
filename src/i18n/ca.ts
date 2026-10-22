@@ -124,7 +124,7 @@ export const ca = {
       items: [
         'Una activitat d’equip amb propòsit de desenvolupament',
         'Converses, reconeixement i connexió facilitats',
-        'Opcionalment, una fotografia conductual agregada de l’equip, si la confidencialitat ho permet',
+        'Opcionalment, una fotografia conductual agregada de l’equip',
       ],
     },
     timeline: ['Benvinguda', 'Dinàmiques', 'Gran repte', 'Compromís', 'Tancament'],
