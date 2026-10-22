@@ -135,7 +135,6 @@ export const ca = {
     title: 'Cap equip creix sol. Feu el primer pas, junts.',
     body: 'Doneu-li a l’equip l’espai que es mereix per connectar de debò. Feu de CONNECT TEAM EXPERIENCE el vostre punt de partida.',
     boxTitle: 'Parlem?',
-    boxBody: 'Escriviu-nos i us ajudem a triar la data, el format i el nombre de participants.',
     formTitle: 'Les vostres dades',
     company: 'Nom de l’empresa',
     contactName: 'Nom i cognoms de la persona de contacte',

@@ -338,7 +338,6 @@ function Contact() {
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-pine-200">{t.contact.body}</p>
           <div className="mt-8 rounded-2xl bg-ember p-6 text-pine-950">
             <h2 id="parlem" className="font-head text-2xl font-extrabold uppercase">{t.contact.boxTitle}</h2>
-            <p className="mt-2 leading-relaxed">{t.contact.boxBody}</p>
           </div>
           <p className="mt-6 text-sm text-pine-200">
             {t.contact.direct}{' '}
